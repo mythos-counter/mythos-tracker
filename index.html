@@ -538,8 +538,9 @@
 
       <div class="options-about" id="options-about">
         <h3>MYTHOS TRACKER</h3>
-        <p>Chakra and Points tracker for card game matches.</p>
+        <p>Hi, I'm Lalo — I hope you enjoy this awesome game, and that this tracker comes in handy at your table!</p>
         <p>Unofficial fan-made tool. Not affiliated with Naruto or Mythos TCG — all trademarks and rights belong to their respective owners.</p>
+        <button class="options-btn-row" id="about-github">VIEW ON GITHUB</button>
         <button class="options-btn-row" id="about-back">BACK</button>
       </div>
 
@@ -626,6 +627,9 @@
   document.getElementById("about-back").addEventListener("click", () => {
     optionsAbout.classList.remove("showing");
     optionsMenu.classList.remove("hidden");
+  });
+  document.getElementById("about-github").addEventListener("click", () => {
+    window.open("https://github.com/mythos-counter/mythos-tracker", "_blank", "noopener");
   });
 
   // ---- Add to Home Screen ----
