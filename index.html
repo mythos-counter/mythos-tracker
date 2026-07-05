@@ -872,6 +872,15 @@
     </div>
 
     <button class="options-btn" id="mt-options-open">OPTIONS</button>
+
+    <button class="fullscreen-btn" id="mt-fullscreen-toggle" aria-label="Fullscreen">
+      <svg id="mt-fullscreen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
+        <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
+        <path d="M3 16v3a2 2 0 0 0 2 2h3"></path>
+        <path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>
+      </svg>
+    </button>
   </div>
 
   <!-- Overlay 1: who won the current mission -->
@@ -1116,23 +1125,26 @@
   // ---- Fullscreen ----
   const ICON_EXPAND  = '<path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>';
   const ICON_COMPRESS = '<path d="M9 3v3a2 2 0 0 1-2 2H4"></path><path d="M15 3v3a2 2 0 0 0 2 2h3"></path><path d="M9 21v-3a2 2 0 0 0-2-2H4"></path><path d="M15 21v-3a2 2 0 0 1 2-2h3"></path>';
-  const fsIcon = document.getElementById("fullscreen-icon");
-  const fsBtn = document.getElementById("fullscreen-toggle");
+  const fsIcons = [document.getElementById("fullscreen-icon"), document.getElementById("mt-fullscreen-icon")];
+  const fsBtns  = [document.getElementById("fullscreen-toggle"), document.getElementById("mt-fullscreen-toggle")];
 
   const fsSupported = !!(document.documentElement.requestFullscreen && document.fullscreenEnabled !== false);
   if (!fsSupported) {
-    fsBtn.style.display = "none";
+    fsBtns.forEach(btn => btn.style.display = "none");
   } else {
-    fsBtn.addEventListener("click", () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen?.().catch(() => {});
-      } else {
-        document.exitFullscreen?.();
-      }
+    fsBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen?.().catch(() => {});
+        } else {
+          document.exitFullscreen?.();
+        }
+      });
     });
 
     document.addEventListener("fullscreenchange", () => {
-      fsIcon.innerHTML = document.fullscreenElement ? ICON_COMPRESS : ICON_EXPAND;
+      const icon = document.fullscreenElement ? ICON_COMPRESS : ICON_EXPAND;
+      fsIcons.forEach(el => el.innerHTML = icon);
     });
   }
 
