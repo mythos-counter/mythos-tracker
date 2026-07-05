@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>MYTHOS TRACKER</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#12181B">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mythos Tracker">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800;900&display=swap" rel="stylesheet">
@@ -184,8 +192,8 @@
     flex-shrink:0;
   }
 
-  /* ---- Reset button ---- */
-  .reset-btn{
+  /* ---- Options button ---- */
+  .options-btn{
     position:absolute;
     bottom:8px;
     left:50%;
@@ -203,7 +211,70 @@
     cursor:pointer;
     z-index:5;
   }
-  .reset-btn:active{ background:rgba(255,255,255,0.28); }
+  .options-btn:active{ background:rgba(255,255,255,0.28); }
+
+  /* ---- Options overlay (panel, not split screen) ---- */
+  .options-panel{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    background:#1A2226;
+    color:var(--ink);
+    padding:24px;
+  }
+  .options-btn-row{
+    appearance:none;
+    border:none;
+    width:min(90vw, 420px);
+    background:rgba(255,255,255,0.08);
+    color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;
+    font-size:16px;
+    font-weight:800;
+    letter-spacing:0.06em;
+    padding:18px 20px;
+    border-radius:12px;
+    cursor:pointer;
+    text-align:center;
+  }
+  .options-btn-row:active{ background:rgba(255,255,255,0.16); }
+  .options-btn-row.danger{ color:#FF9270; }
+
+  .options-about{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    max-width:52ch;
+    text-align:center;
+  }
+  .options-about.showing{ display:flex; }
+  .options-about h3{
+    margin:0;
+    font-size:20px;
+    font-weight:900;
+    letter-spacing:0.04em;
+  }
+  .options-about p{
+    margin:0;
+    font-size:14px;
+    line-height:1.6;
+    color:rgba(255,255,255,0.75);
+  }
+  .options-menu{ display:flex; flex-direction:column; align-items:center; gap:16px; }
+  .options-menu.hidden{ display:none; }
+  .install-hint{
+    display:none;
+    font-size:12px;
+    color:rgba(255,255,255,0.6);
+    max-width:44ch;
+    text-align:center;
+    line-height:1.5;
+  }
+  .install-hint.showing{ display:block; }
 
   .fullscreen-btn{
     position:absolute;
@@ -390,7 +461,7 @@
         <button class="step step-chakra" data-side="right" data-stat="chakra" data-delta="-1">–</button>
       </div>
 
-      <button class="reset-btn" id="reset">REINICIAR</button>
+      <button class="options-btn" id="options-open">OPTIONS</button>
 
       <button class="fullscreen-btn" id="fullscreen-toggle" aria-label="Pantalla completa">
         <svg id="fullscreen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -448,6 +519,31 @@
     </div>
   </div>
 
+  <!-- Overlay 3: opciones -->
+  <div class="overlay" id="overlay-options">
+    <div class="overlay-header">
+      <button class="overlay-cancel" id="options-close">CERRAR</button>
+      <div class="overlay-title">OPTIONS</div>
+    </div>
+    <div class="options-panel">
+
+      <div class="options-menu" id="options-menu">
+        <button class="options-btn-row danger" id="reset-tracking">RESET TRACKING</button>
+        <button class="options-btn-row" id="install-shortcut">AÑADIR A PANTALLA DE INICIO</button>
+        <p class="install-hint" id="install-hint">Tu navegador no permite instalarla con un toque: abre el menú de compartir/opciones y elige "Añadir a pantalla de inicio".</p>
+        <button class="options-btn-row" id="about-open">ABOUT</button>
+      </div>
+
+      <div class="options-about" id="options-about">
+        <h3>MYTHOS TRACKER</h3>
+        <p>Contador de Chakra y Puntos para partidas de cartas.</p>
+        <p>Herramienta hecha por fans, no oficial. No afiliada a Naruto ni a Mythos TCG — todas las marcas y derechos pertenecen a sus respectivos propietarios.</p>
+        <button class="options-btn-row" id="about-back">VOLVER</button>
+      </div>
+
+    </div>
+  </div>
+
 <script>
   const DEFAULTS = {
     left:  { chakra: 5, points: 0 },
@@ -497,11 +593,55 @@
     });
   });
 
-  document.getElementById("reset").addEventListener("click", () => {
+  // ---- Options overlay ----
+  const overlayOptions = document.getElementById("overlay-options");
+  const optionsMenu    = document.getElementById("options-menu");
+  const optionsAbout   = document.getElementById("options-about");
+
+  document.getElementById("options-open").addEventListener("click", () => {
+    optionsMenu.classList.remove("hidden");
+    optionsAbout.classList.remove("showing");
+    overlayOptions.classList.add("showing");
+  });
+
+  document.getElementById("options-close").addEventListener("click", () => {
+    overlayOptions.classList.remove("showing");
+  });
+
+  document.getElementById("reset-tracking").addEventListener("click", () => {
     if (confirm("¿Reiniciar Chakra y Puntos de ambos jugadores?")) {
       state = structuredClone(DEFAULTS);
       render();
       saveState();
+      overlayOptions.classList.remove("showing");
+    }
+  });
+
+  document.getElementById("about-open").addEventListener("click", () => {
+    optionsMenu.classList.add("hidden");
+    optionsAbout.classList.add("showing");
+  });
+  document.getElementById("about-back").addEventListener("click", () => {
+    optionsAbout.classList.remove("showing");
+    optionsMenu.classList.remove("hidden");
+  });
+
+  // ---- Añadir a pantalla de inicio ----
+  let deferredInstallPrompt = null;
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+  });
+
+  document.getElementById("install-shortcut").addEventListener("click", async () => {
+    const hint = document.getElementById("install-hint");
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      hint.classList.remove("showing");
+    } else {
+      hint.classList.add("showing");
     }
   });
 
