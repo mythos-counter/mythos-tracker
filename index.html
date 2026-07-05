@@ -534,6 +534,7 @@
         <button class="options-btn-row" id="install-shortcut">ADD TO HOME SCREEN</button>
         <p class="install-hint" id="install-hint">Your browser can't install it with one tap — open the share/menu button and choose "Add to Home Screen".</p>
         <button class="options-btn-row" id="about-open">ABOUT</button>
+        <button class="options-btn-row" id="options-menu-back">BACK</button>
       </div>
 
       <div class="options-about" id="options-about">
@@ -608,6 +609,9 @@
   });
 
   document.getElementById("options-close").addEventListener("click", () => {
+    overlayOptions.classList.remove("showing");
+  });
+  document.getElementById("options-menu-back").addEventListener("click", () => {
     overlayOptions.classList.remove("showing");
   });
 
