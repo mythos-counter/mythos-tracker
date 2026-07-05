@@ -1,7 +1,7 @@
 {
   "name": "Mythos Tracker",
   "short_name": "Mythos Tracker",
-  "description": "Contador de Chakra y Puntos para partidas de cartas",
+  "description": "Chakra and Points tracker for card game matches",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

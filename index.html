@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -296,7 +296,7 @@
   .fullscreen-btn:active{ background:rgba(255,255,255,0.28); }
   .fullscreen-btn svg{ width:16px; height:16px; }
 
-  /* ---- Overlays: sumar puntos / chakra inicial ---- */
+  /* ---- Overlays: add points / starting chakra ---- */
   .overlay{
     display:none;
     position:fixed;
@@ -413,7 +413,7 @@
 
   <div class="rotate-hint">
     <div class="icon">📱↻</div>
-    <p>Gira el móvil en horizontal para usar el contador.</p>
+    <p>Rotate your device to landscape to use the tracker.</p>
   </div>
 
   <div class="app">
@@ -463,7 +463,7 @@
 
       <button class="options-btn" id="options-open">OPTIONS</button>
 
-      <button class="fullscreen-btn" id="fullscreen-toggle" aria-label="Pantalla completa">
+      <button class="fullscreen-btn" id="fullscreen-toggle" aria-label="Fullscreen">
         <svg id="fullscreen-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M8 3H5a2 2 0 0 0-2 2v3"></path>
           <path d="M21 8V5a2 2 0 0 0-2-2h-3"></path>
@@ -475,11 +475,11 @@
 
   </div>
 
-  <!-- Overlay 1: sumar puntos de victoria de la ronda -->
+  <!-- Overlay 1: add this round's victory points -->
   <div class="overlay" id="overlay-points">
     <div class="overlay-header">
-      <button class="overlay-cancel" id="points-overlay-cancel">CANCELAR</button>
-      <div class="overlay-title">PUNTOS DE ESTA RONDA</div>
+      <button class="overlay-cancel" id="points-overlay-cancel">CANCEL</button>
+      <div class="overlay-title">POINTS THIS ROUND</div>
     </div>
     <div class="overlay-main">
       <div class="overlay-side left">
@@ -497,11 +497,11 @@
     </div>
   </div>
 
-  <!-- Overlay 2: chakra inicial de la nueva ronda -->
+  <!-- Overlay 2: starting chakra for the new round -->
   <div class="overlay" id="overlay-chakra">
     <div class="overlay-header">
-      <button class="overlay-cancel" id="chakra-overlay-cancel">CANCELAR</button>
-      <div class="overlay-title">CHAKRA INICIAL DE LA RONDA</div>
+      <button class="overlay-cancel" id="chakra-overlay-cancel">CANCEL</button>
+      <div class="overlay-title">STARTING CHAKRA</div>
     </div>
     <div class="overlay-main">
       <div class="overlay-side left">
@@ -519,26 +519,26 @@
     </div>
   </div>
 
-  <!-- Overlay 3: opciones -->
+  <!-- Overlay 3: options -->
   <div class="overlay" id="overlay-options">
     <div class="overlay-header">
-      <button class="overlay-cancel" id="options-close">CERRAR</button>
+      <button class="overlay-cancel" id="options-close">CLOSE</button>
       <div class="overlay-title">OPTIONS</div>
     </div>
     <div class="options-panel">
 
       <div class="options-menu" id="options-menu">
         <button class="options-btn-row danger" id="reset-tracking">RESET TRACKING</button>
-        <button class="options-btn-row" id="install-shortcut">AÑADIR A PANTALLA DE INICIO</button>
-        <p class="install-hint" id="install-hint">Tu navegador no permite instalarla con un toque: abre el menú de compartir/opciones y elige "Añadir a pantalla de inicio".</p>
+        <button class="options-btn-row" id="install-shortcut">ADD TO HOME SCREEN</button>
+        <p class="install-hint" id="install-hint">Your browser can't install it with one tap — open the share/menu button and choose "Add to Home Screen".</p>
         <button class="options-btn-row" id="about-open">ABOUT</button>
       </div>
 
       <div class="options-about" id="options-about">
         <h3>MYTHOS TRACKER</h3>
-        <p>Contador de Chakra y Puntos para partidas de cartas.</p>
-        <p>Herramienta hecha por fans, no oficial. No afiliada a Naruto ni a Mythos TCG — todas las marcas y derechos pertenecen a sus respectivos propietarios.</p>
-        <button class="options-btn-row" id="about-back">VOLVER</button>
+        <p>Chakra and Points tracker for card game matches.</p>
+        <p>Unofficial fan-made tool. Not affiliated with Naruto or Mythos TCG — all trademarks and rights belong to their respective owners.</p>
+        <button class="options-btn-row" id="about-back">BACK</button>
       </div>
 
     </div>
@@ -609,7 +609,7 @@
   });
 
   document.getElementById("reset-tracking").addEventListener("click", () => {
-    if (confirm("¿Reiniciar Chakra y Puntos de ambos jugadores?")) {
+    if (confirm("Reset Chakra and Points for both players?")) {
       state = structuredClone(DEFAULTS);
       render();
       saveState();
@@ -626,7 +626,7 @@
     optionsMenu.classList.remove("hidden");
   });
 
-  // ---- Añadir a pantalla de inicio ----
+  // ---- Add to Home Screen ----
   let deferredInstallPrompt = null;
   window.addEventListener("beforeinstallprompt", (e) => {
     e.preventDefault();
@@ -645,24 +645,30 @@
     }
   });
 
-  // ---- Pantalla completa ----
+  // ---- Fullscreen ----
   const ICON_EXPAND  = '<path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M21 8V5a2 2 0 0 0-2-2h-3"></path><path d="M3 16v3a2 2 0 0 0 2 2h3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path>';
   const ICON_COMPRESS = '<path d="M9 3v3a2 2 0 0 1-2 2H4"></path><path d="M15 3v3a2 2 0 0 0 2 2h3"></path><path d="M9 21v-3a2 2 0 0 0-2-2H4"></path><path d="M15 21v-3a2 2 0 0 1 2-2h3"></path>';
   const fsIcon = document.getElementById("fullscreen-icon");
+  const fsBtn = document.getElementById("fullscreen-toggle");
 
-  document.getElementById("fullscreen-toggle").addEventListener("click", () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen?.().catch(() => {});
-    } else {
-      document.exitFullscreen?.();
-    }
-  });
+  const fsSupported = !!(document.documentElement.requestFullscreen && document.fullscreenEnabled !== false);
+  if (!fsSupported) {
+    fsBtn.style.display = "none";
+  } else {
+    fsBtn.addEventListener("click", () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen?.().catch(() => {});
+      } else {
+        document.exitFullscreen?.();
+      }
+    });
 
-  document.addEventListener("fullscreenchange", () => {
-    fsIcon.innerHTML = document.fullscreenElement ? ICON_COMPRESS : ICON_EXPAND;
-  });
+    document.addEventListener("fullscreenchange", () => {
+      fsIcon.innerHTML = document.fullscreenElement ? ICON_COMPRESS : ICON_EXPAND;
+    });
+  }
 
-  // ---- Overlay: fin de ronda (sumar puntos -> chakra inicial) ----
+  // ---- Overlay: end of round (add points -> starting chakra) ----
   const overlayPoints = document.getElementById("overlay-points");
   const overlayChakra = document.getElementById("overlay-chakra");
   let ovPoints = { left: 0, right: 0 };
