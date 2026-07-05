@@ -801,6 +801,7 @@
   // ---- Missions: resolve winners each round -> starting chakra -> unlock next mission ----
   const MISSION_ORDER = ["d", "c", "b", "a"];
   const MISSION_LABEL = { d: "D-MISSION", c: "C-MISSION", b: "B-MISSION", a: "A-MISSION" };
+  const MISSION_LIMITS = { d: [1, 4], c: [2, 5], b: [3, 6], a: [4, 7] };
   let missionValue = { d: null, c: null, b: null, a: null };
   let activeMissions = [];
   let resolveQueue = [];
@@ -932,18 +933,20 @@
 
   function openMissionSetup(rank){
     missionSetupRank = rank;
-    missionSetupValue = 0;
+    missionSetupValue = MISSION_LIMITS[rank][0];
     missionSetupValueEl.textContent = missionSetupValue;
-    missionSetupTitle.textContent = `${MISSION_LABEL[rank]} TOTAL POINTS`;
+    missionSetupTitle.textContent = `${MISSION_LABEL[rank]} TOTAL POINTS (${MISSION_LIMITS[rank][0]}-${MISSION_LIMITS[rank][1]})`;
     overlayMissionSetup.classList.add("showing");
   }
 
   document.getElementById("mission-setup-minus").addEventListener("click", () => {
-    missionSetupValue = Math.max(0, missionSetupValue - 1);
+    const [min] = MISSION_LIMITS[missionSetupRank];
+    missionSetupValue = Math.max(min, missionSetupValue - 1);
     missionSetupValueEl.textContent = missionSetupValue;
   });
   document.getElementById("mission-setup-plus").addEventListener("click", () => {
-    missionSetupValue = missionSetupValue + 1;
+    const [, max] = MISSION_LIMITS[missionSetupRank];
+    missionSetupValue = Math.min(max, missionSetupValue + 1);
     missionSetupValueEl.textContent = missionSetupValue;
   });
 
