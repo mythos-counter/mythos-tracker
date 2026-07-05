@@ -837,6 +837,7 @@
   const MISSION_LIMITS = { d: [2, 4], c: [3, 5], b: [4, 6], a: [5, 7] };
   let missionValue = { d: null, c: null, b: null, a: null };
   let activeMissions = [];
+  let resolvedMissions = [];
   let resolveQueue = [];
 
   const overlayMissionWinner = document.getElementById("overlay-mission-winner");
@@ -884,6 +885,7 @@
   function awardMissionWinner(side){
     const rank = overlayMissionWinner.dataset.rank;
     state[side].points = Math.max(0, state[side].points + missionValue[rank]);
+    resolvedMissions.push(rank);
     render();
     saveState();
     overlayMissionWinner.classList.remove("showing");
@@ -891,7 +893,7 @@
   }
 
   document.getElementById("end-round").addEventListener("click", () => {
-    resolveQueue = [...activeMissions];
+    resolveQueue = activeMissions.filter(r => !resolvedMissions.includes(r));
     resolveNextMission();
   });
 
