@@ -593,7 +593,6 @@
   const DEFAULTS = {
     left:  { chakra: 5, points: 0 },
     right: { chakra: 5, points: 0 },
-    lastRoundChakra: { left: 5, right: 5 },
   };
   const STORAGE_KEY = "naruto-mythos-counter-v1";
 
@@ -605,10 +604,6 @@
       return {
         left:  { chakra: parsed.left?.chakra  ?? DEFAULTS.left.chakra,  points: parsed.left?.points  ?? DEFAULTS.left.points },
         right: { chakra: parsed.right?.chakra ?? DEFAULTS.right.chakra, points: parsed.right?.points ?? DEFAULTS.right.points },
-        lastRoundChakra: {
-          left:  parsed.lastRoundChakra?.left  ?? DEFAULTS.lastRoundChakra.left,
-          right: parsed.lastRoundChakra?.right ?? DEFAULTS.lastRoundChakra.right,
-        },
       };
     } catch { return structuredClone(DEFAULTS); }
   }
@@ -766,7 +761,7 @@
     saveState();
     overlayPoints.classList.remove("showing");
 
-    ovChakra = { left: state.lastRoundChakra.left, right: state.lastRoundChakra.right };
+    ovChakra = { left: 5, right: 5 };
     renderOverlayChakra();
     overlayChakra.classList.add("showing");
   });
@@ -778,7 +773,6 @@
   document.getElementById("chakra-overlay-ok").addEventListener("click", () => {
     state.left.chakra  = ovChakra.left;
     state.right.chakra = ovChakra.right;
-    state.lastRoundChakra = { left: ovChakra.left, right: ovChakra.right };
     render();
     saveState();
     overlayChakra.classList.remove("showing");
