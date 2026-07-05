@@ -151,6 +151,42 @@
   }
   @keyframes timerBlink{ 50%{ opacity:0.2; } }
 
+  /* ---- Mission row ---- */
+  .mission-row{
+    display:flex;
+    flex-shrink:0;
+    background:var(--diff-bg);
+  }
+  .mission-group{
+    flex:1;
+    display:flex;
+  }
+  .mission-gap{
+    width:110px;
+    flex-shrink:0;
+  }
+  .mission-cell{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    padding:6px 4px;
+    border-right:1px solid rgba(255,255,255,0.12);
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:0.05em;
+    color:rgba(255,255,255,0.8);
+    white-space:nowrap;
+  }
+  .mission-group .mission-cell:last-child{ border-right:none; }
+  .mission-value{
+    color:#FFD400;
+    font-weight:900;
+    font-size:14px;
+    font-variant-numeric:tabular-nums;
+  }
+
   /* ---- Main area: Chakra left / right ---- */
   .main{
     display:flex;
@@ -483,6 +519,18 @@
           <span class="points-value" id="points-right">0</span>
           <button class="step points-minus" data-side="right" data-stat="points" data-delta="-1">–</button>
         </div>
+      </div>
+    </div>
+
+    <div class="mission-row">
+      <div class="mission-group">
+        <div class="mission-cell">D-MISSION <span class="mission-value">1</span></div>
+        <div class="mission-cell">C-MISSION <span class="mission-value">2</span></div>
+      </div>
+      <div class="mission-gap"></div>
+      <div class="mission-group">
+        <div class="mission-cell">B-MISSION <span class="mission-value">3</span></div>
+        <div class="mission-cell">A-MISSION <span class="mission-value">4</span></div>
       </div>
     </div>
 
