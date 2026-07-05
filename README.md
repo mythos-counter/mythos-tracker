@@ -14,4 +14,4 @@ This is an unofficial, fan-made tool. It is not affiliated with, endorsed by, or
 
 ## Found a bug or have a suggestion?
 
-Please [open an issue](https://github.com/mythos-counter/mythos-tracker/issues) on this repository — I'll take a look as soon as I can.
+Please [open an issue](https://github.com/mythos-counter/mythos-tracker/issues) on this repository, or email **mythostrackerapp@gmail.com** — I'll take a look as soon as I can.
