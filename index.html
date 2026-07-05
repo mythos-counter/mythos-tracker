@@ -675,7 +675,6 @@
       </div>
     </div>
     <div class="final-actions">
-      <button class="options-btn-row" id="final-extra-round">PLAY EXTRA ROUND</button>
       <button class="options-btn-row danger" id="final-finish">FINISH &amp; RESET</button>
     </div>
   </div>
@@ -935,11 +934,6 @@
       saveState();
       renderFinalScore();
     });
-  });
-
-  document.getElementById("final-extra-round").addEventListener("click", () => {
-    overlayFinal.classList.remove("showing");
-    startChakraStep();
   });
 
   document.getElementById("final-finish").addEventListener("click", () => {
