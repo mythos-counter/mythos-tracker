@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Naruto Mythos — Contador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --left: #D9531E;
+    --left-dark: #B33F14;
+    --right: #1F4E5A;
+    --right-dark: #163944;
+    --diff-bg: #12181B;
+    --ink: #FFFFFF;
+    --ink-dim: rgba(255,255,255,0.72);
+    --topbar-h: 64px;
+  }
+
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+
+  html, body{
+    margin:0;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+    font-family:"Inter",system-ui,sans-serif;
+  }
+
+  .app{
+    display:flex;
+    flex-direction:column;
+    height:100dvh;
+    width:100vw;
+  }
+
+  /* ---- Top bar: Points / Diff / Points ---- */
+  .topbar{
+    display:flex;
+    height:var(--topbar-h);
+    flex-shrink:0;
+  }
+  .points{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    color:var(--ink);
+  }
+  .points.left{ background:var(--left-dark); flex-direction:row; }
+  .points.right{ background:var(--right-dark); flex-direction:row-reverse; }
+
+  .points-label{
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:0.14em;
+    color:var(--ink-dim);
+    margin-right:6px;
+  }
+  .points.right .points-label{ margin-right:0; margin-left:6px; }
+
+  .points-value{
+    font-size:22px;
+    font-weight:900;
+    font-variant-numeric:tabular-nums;
+    min-width:1.4em;
+    text-align:center;
+  }
+
+  .diff{
+    width:110px;
+    flex-shrink:0;
+    background:var(--diff-bg);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    color:var(--ink);
+  }
+  .diff-label{
+    font-size:9.5px;
+    font-weight:800;
+    letter-spacing:0.16em;
+    color:rgba(255,255,255,0.5);
+  }
+  .diff-value{
+    font-size:19px;
+    font-weight:900;
+    font-variant-numeric:tabular-nums;
+    margin-top:1px;
+  }
+
+  /* ---- Main area: Chakra left / right ---- */
+  .main{
+    display:flex;
+    flex:1;
+    min-height:0;
+  }
+  .chakra{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:clamp(16px, 5vw, 48px);
+    position:relative;
+    color:var(--ink);
+  }
+  .chakra.left{ background:var(--left); flex-direction:row; }
+  .chakra.right{ background:var(--right); flex-direction:row-reverse; }
+
+  .chakra-label{
+    position:absolute;
+    top:14px;
+    left:0; right:0;
+    text-align:center;
+    font-size:clamp(13px, 2.6vh, 18px);
+    font-weight:800;
+    letter-spacing:0.18em;
+    color:var(--ink-dim);
+  }
+
+  .chakra-value{
+    font-size:clamp(64px, 22vh, 180px);
+    font-weight:900;
+    font-variant-numeric:tabular-nums;
+    line-height:1;
+    min-width:1.3ch;
+    text-align:center;
+  }
+
+  button.step{
+    appearance:none;
+    border:none;
+    background:rgba(255,255,255,0.16);
+    color:var(--ink);
+    font-family:"Inter",system-ui,sans-serif;
+    font-weight:900;
+    border-radius:999px;
+    cursor:pointer;
+    touch-action:manipulation;
+    line-height:1;
+  }
+  button.step:active{ background:rgba(255,255,255,0.32); }
+
+  .step-points{
+    width:26px; height:26px;
+    font-size:16px;
+  }
+  .step-chakra{
+    width:clamp(48px, 9vh, 72px);
+    height:clamp(48px, 9vh, 72px);
+    font-size:clamp(22px, 4vh, 34px);
+  }
+
+  .divider{
+    width:2px;
+    background:rgba(0,0,0,0.35);
+    flex-shrink:0;
+  }
+
+  /* ---- Reset button ---- */
+  .reset-btn{
+    position:absolute;
+    bottom:8px;
+    left:50%;
+    transform:translateX(-50%);
+    appearance:none;
+    border:none;
+    background:rgba(255,255,255,0.14);
+    color:rgba(255,255,255,0.85);
+    font-family:"Inter",system-ui,sans-serif;
+    font-size:11px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    padding:6px 14px;
+    border-radius:999px;
+    cursor:pointer;
+    z-index:5;
+  }
+  .reset-btn:active{ background:rgba(255,255,255,0.28); }
+
+  /* ---- Rotate hint for portrait ---- */
+  .rotate-hint{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:#12181B;
+    color:#fff;
+    z-index:20;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    text-align:center;
+    padding:24px;
+    font-family:"Inter",system-ui,sans-serif;
+  }
+  .rotate-hint .icon{ font-size:44px; }
+  .rotate-hint p{ margin:0; font-size:15px; color:rgba(255,255,255,0.75); max-width:32ch; }
+
+  @media (orientation:portrait){
+    .app{ display:none; }
+    .rotate-hint{ display:flex; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="rotate-hint">
+    <div class="icon">📱↻</div>
+    <p>Gira el móvil en horizontal para usar el contador.</p>
+  </div>
+
+  <div class="app">
+
+    <div class="topbar">
+      <div class="points left">
+        <button class="step points-plus" data-side="left" data-stat="points" data-delta="1">+</button>
+        <span class="points-value" id="points-left">0</span>
+        <button class="step points-minus" data-side="left" data-stat="points" data-delta="-1">–</button>
+      </div>
+
+      <div class="diff">
+        <div class="diff-label">DIFF</div>
+        <div class="diff-value" id="diff">0</div>
+      </div>
+
+      <div class="points right">
+        <button class="step points-plus" data-side="right" data-stat="points" data-delta="1">+</button>
+        <span class="points-value" id="points-right">0</span>
+        <button class="step points-minus" data-side="right" data-stat="points" data-delta="-1">–</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="chakra left">
+        <div class="chakra-label">CHAKRA</div>
+        <button class="step step-chakra" data-side="left" data-stat="chakra" data-delta="-1">–</button>
+        <span class="chakra-value" id="chakra-left">5</span>
+        <button class="step step-chakra" data-side="left" data-stat="chakra" data-delta="1">+</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="chakra right">
+        <button class="step step-chakra" data-side="right" data-stat="chakra" data-delta="1">+</button>
+        <span class="chakra-value" id="chakra-right">5</span>
+        <button class="step step-chakra" data-side="right" data-stat="chakra" data-delta="-1">–</button>
+        <div class="chakra-label">CHAKRA</div>
+      </div>
+
+      <button class="reset-btn" id="reset">REINICIAR</button>
+    </div>
+
+  </div>
+
+<script>
+  const DEFAULTS = { left: { chakra: 5, points: 0 }, right: { chakra: 5, points: 0 } };
+  const STORAGE_KEY = "naruto-mythos-counter-v1";
+
+  function loadState(){
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return structuredClone(DEFAULTS);
+      const parsed = JSON.parse(raw);
+      return {
+        left:  { chakra: parsed.left?.chakra  ?? DEFAULTS.left.chakra,  points: parsed.left?.points  ?? DEFAULTS.left.points },
+        right: { chakra: parsed.right?.chakra ?? DEFAULTS.right.chakra, points: parsed.right?.points ?? DEFAULTS.right.points },
+      };
+    } catch { return structuredClone(DEFAULTS); }
+  }
+
+  function saveState(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+
+  let state = loadState();
+
+  function render(){
+    document.getElementById("chakra-left").textContent  = state.left.chakra;
+    document.getElementById("chakra-right").textContent = state.right.chakra;
+    document.getElementById("points-left").textContent  = state.left.points;
+    document.getElementById("points-right").textContent = state.right.points;
+    document.getElementById("diff").textContent = Math.abs(state.left.points - state.right.points);
+  }
+
+  function change(side, stat, delta){
+    const next = state[side][stat] + delta;
+    state[side][stat] = Math.max(0, next);
+    render();
+    saveState();
+  }
+
+  document.querySelectorAll("button.step[data-stat]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      change(btn.dataset.side, btn.dataset.stat, Number(btn.dataset.delta));
+    });
+  });
+
+  document.getElementById("reset").addEventListener("click", () => {
+    if (confirm("¿Reiniciar Chakra y Puntos de ambos jugadores?")) {
+      state = structuredClone(DEFAULTS);
+      render();
+      saveState();
+    }
+  });
+
+  render();
+</script>
+</body>
+</html>
