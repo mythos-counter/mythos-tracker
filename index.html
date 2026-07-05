@@ -427,6 +427,17 @@
     text-align:center;
   }
 
+  .overlay-single{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:clamp(16px, 5vw, 48px);
+    background:var(--diff-bg);
+    position:relative;
+    color:var(--ink);
+  }
+
   .overlay-ok{
     position:absolute;
     bottom:14px;
@@ -470,6 +481,7 @@
     .app{ display:none; }
     .rotate-hint{ display:flex; }
     #overlay-start{ display:none; }
+    #overlay-dmission{ display:none; }
   }
 </style>
 </head>
@@ -487,6 +499,19 @@
       <h3 style="margin:0 0 4px; font-size:24px; font-weight:900; letter-spacing:0.04em; color:var(--ink);">START GAME</h3>
       <button class="options-btn-row" id="start-timer-btn">TIMER 30'</button>
       <button class="options-btn-row" id="start-notimer-btn">NO TIMER</button>
+    </div>
+  </div>
+
+  <!-- D-MISSION setup -->
+  <div class="overlay" id="overlay-dmission">
+    <div class="overlay-header">
+      <div class="overlay-title">D-MISSION TOTAL POINTS</div>
+    </div>
+    <div class="overlay-single">
+      <button class="step step-chakra" id="dmission-minus">–</button>
+      <span class="overlay-value" id="dmission-value">0</span>
+      <button class="step step-chakra" id="dmission-plus">+</button>
+      <button class="overlay-ok" id="dmission-ok">OK</button>
     </div>
   </div>
 
@@ -524,7 +549,7 @@
 
     <div class="mission-row">
       <div class="mission-group">
-        <div class="mission-cell">D-MISSION <span class="mission-value">1</span></div>
+        <div class="mission-cell">D-MISSION <span class="mission-value" id="mission-value-d">0</span></div>
         <div class="mission-cell">C-MISSION <span class="mission-value">2</span></div>
       </div>
       <div class="mission-gap"></div>
@@ -863,11 +888,40 @@
   document.getElementById("start-timer-btn").addEventListener("click", () => {
     overlayStart.classList.remove("showing");
     startTimer(30);
+    openDMissionSetup();
   });
 
   document.getElementById("start-notimer-btn").addEventListener("click", () => {
     overlayStart.classList.remove("showing");
     timerBox.classList.remove("active");
+    openDMissionSetup();
+  });
+
+  // ---- D-MISSION setup ----
+  const overlayDMission = document.getElementById("overlay-dmission");
+  const dMissionValueEl = document.getElementById("dmission-value");
+  let dMissionValue = 0;
+
+  function openDMissionSetup(){
+    dMissionValue = 0;
+    dMissionValueEl.textContent = dMissionValue;
+    overlayDMission.classList.add("showing");
+  }
+
+  document.getElementById("dmission-minus").addEventListener("click", () => {
+    dMissionValue = Math.max(0, dMissionValue - 1);
+    dMissionValueEl.textContent = dMissionValue;
+  });
+  document.getElementById("dmission-plus").addEventListener("click", () => {
+    dMissionValue = dMissionValue + 1;
+    dMissionValueEl.textContent = dMissionValue;
+  });
+
+  document.getElementById("dmission-ok").addEventListener("click", () => {
+    if (confirm(`Total points: ${dMissionValue}?`)) {
+      document.getElementById("mission-value-d").textContent = dMissionValue;
+      overlayDMission.classList.remove("showing");
+    }
   });
 
   render();
