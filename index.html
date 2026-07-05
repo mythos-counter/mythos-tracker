@@ -146,6 +146,16 @@
   .mt-diff.diff-positive{ color:#4ADE80; }
   .mt-diff.diff-negative{ color:#FF5C5C; }
   .mt-diff-total{ font-size:clamp(13px, 2.4vh, 17px); color:var(--ink); }
+  .mt-diff-projected{
+    font-size:clamp(9px, 1.6vh, 11px);
+    letter-spacing:0.08em;
+    opacity:0.8;
+  }
+  .mt-projected{
+    font-size:clamp(10px, 1.8vh, 13px);
+    font-weight:800;
+    color:rgba(255,255,255,0.8);
+  }
 
   .app-mission .options-btn{ position:absolute; bottom:8px; left:50%; transform:translateX(-50%); }
 
@@ -768,21 +778,6 @@
         </div>
       </div>
 
-      <div class="mt-col mt-center">
-        <div class="mt-stat mt-rival">
-          <div class="mt-stat-label">RIVAL POINTS</div>
-          <span class="mt-stat-value" id="mt-rival-total">0</span>
-        </div>
-        <div class="mt-mission-info">
-          <div class="mt-diff mt-diff-total" id="mt-diff-overall">DIFF 0</div>
-          <button class="end-round-btn" id="mt-end-round">END ROUND</button>
-        </div>
-        <div class="mt-stat mt-player">
-          <div class="mt-stat-label">YOUR POINTS</div>
-          <span class="mt-stat-value" id="mt-player-total">0</span>
-        </div>
-      </div>
-
       <div class="mt-col locked" data-rank="b">
         <div class="mt-stat mt-rival">
           <div class="mt-stat-label">RIVAL</div>
@@ -826,6 +821,24 @@
             <span class="mt-stat-value" id="mt-player-a">0</span>
             <button class="mt-step" data-mt="player" data-rank="a" data-delta="1">+</button>
           </div>
+        </div>
+      </div>
+
+      <div class="mt-col mt-center">
+        <div class="mt-stat mt-rival">
+          <div class="mt-stat-label">RIVAL POINTS</div>
+          <span class="mt-stat-value" id="mt-rival-total">0</span>
+          <span class="mt-projected" id="mt-rival-projected">+0</span>
+        </div>
+        <div class="mt-mission-info">
+          <div class="mt-diff mt-diff-total" id="mt-diff-overall">DIFF 0</div>
+          <div class="mt-diff mt-diff-projected" id="mt-diff-projected">PROJECTED 0</div>
+          <button class="end-round-btn" id="mt-end-round">END ROUND</button>
+        </div>
+        <div class="mt-stat mt-player">
+          <div class="mt-stat-label">YOUR POINTS</div>
+          <span class="mt-stat-value" id="mt-player-total">0</span>
+          <span class="mt-projected" id="mt-player-projected">+0</span>
         </div>
       </div>
 
@@ -1212,6 +1225,18 @@
     mtApplyDiffColor(diffEl, diff);
   }
 
+  function mtProjection(){
+    let rivalProjected = 0, playerProjected = 0;
+    MISSION_ORDER.forEach(rank => {
+      if (mtMissionValue[rank] === null) return;
+      if (document.querySelector(`.mt-col[data-rank="${rank}"]`).classList.contains("resolved")) return;
+      const raw = mtPoints[rank].player - mtPoints[rank].rival;
+      if (raw > 0) playerProjected += mtMissionValue[rank];
+      else if (raw < 0) rivalProjected += mtMissionValue[rank];
+    });
+    return { rivalProjected, playerProjected };
+  }
+
   function mtRenderTotals(){
     document.getElementById("mt-rival-total").textContent  = mtTotals.rival;
     document.getElementById("mt-player-total").textContent = mtTotals.player;
@@ -1219,6 +1244,15 @@
     const diffEl = document.getElementById("mt-diff-overall");
     diffEl.textContent = `DIFF ${diff}`;
     mtApplyDiffColor(diffEl, diff);
+
+    const { rivalProjected, playerProjected } = mtProjection();
+    document.getElementById("mt-rival-projected").textContent  = `+${rivalProjected}`;
+    document.getElementById("mt-player-projected").textContent = `+${playerProjected}`;
+
+    const projectedDiff = diff + playerProjected - rivalProjected;
+    const projEl = document.getElementById("mt-diff-projected");
+    projEl.textContent = `PROJECTED ${projectedDiff}`;
+    mtApplyDiffColor(projEl, projectedDiff);
   }
 
   function resetMissionTracker(){
@@ -1254,8 +1288,8 @@
   function mtAwardMissionWinner(who){
     const rank = overlayMissionWinner.dataset.rank;
     mtTotals[who] += mtMissionValue[rank];
-    mtRenderTotals();
     document.querySelector(`.mt-col[data-rank="${rank}"]`).classList.add("resolved");
+    mtRenderTotals();
     overlayMissionWinner.classList.remove("showing");
     mtResolveNextMission();
   }
@@ -1265,6 +1299,7 @@
       const rank = btn.dataset.rank, who = btn.dataset.mt, delta = Number(btn.dataset.delta);
       mtPoints[rank][who] = Math.max(0, mtPoints[rank][who] + delta);
       mtRenderColumn(rank);
+      mtRenderTotals();
     });
   });
 
@@ -1375,6 +1410,7 @@
       document.getElementById(`mt-total-${missionSetupRank}`).textContent = missionSetupValue;
       document.querySelector(`.mt-col[data-rank="${missionSetupRank}"]`).classList.remove("locked");
       mtActiveMissions.push(missionSetupRank);
+      mtRenderTotals();
     } else {
       missionValue[missionSetupRank] = missionSetupValue;
       const cell = document.getElementById(`mission-value-${missionSetupRank}`);
