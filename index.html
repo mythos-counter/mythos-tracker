@@ -27,6 +27,7 @@
     --ink: #FFFFFF;
     --ink-dim: rgba(255,255,255,0.72);
     --topbar-h: 136px;
+    --diff-w: 110px;
   }
 
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
@@ -97,6 +98,8 @@
     font-weight:900;
     font-variant-numeric:tabular-nums;
     line-height:1;
+    text-align:center;
+    flex-shrink:0;
   }
   .mt-stepper{
     display:flex;
@@ -105,7 +108,11 @@
   }
   .mt-stepper.mt-stepper-vertical{
     flex-direction:column;
+    align-items:stretch;
     gap:6px;
+    flex:1;
+    min-height:0;
+    width:100%;
   }
   .mt-step{
     appearance:none;
@@ -123,8 +130,12 @@
   }
   .mt-step:active{ background:rgba(0,0,0,0.32); }
   .mt-step[data-mt]{
-    width:40px; height:40px;
-    font-size:22px;
+    flex:1;
+    width:100%;
+    height:auto;
+    min-height:0;
+    border-radius:12px;
+    font-size:clamp(16px, 3.4vh, 24px);
   }
 
   .mt-mission-info{
@@ -182,15 +193,16 @@
 
   /* ---- Top bar: Points / Diff / Points ---- */
   .topbar{
-    display:flex;
+    display:grid;
+    grid-template-columns: 1fr var(--diff-w) 1fr;
     flex-shrink:0;
   }
   .points{
-    flex:1;
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:space-between;
+    justify-content:center;
+    gap:8px;
     padding:6px 0;
     color:var(--ink);
   }
@@ -221,8 +233,6 @@
   }
 
   .diff{
-    width:110px;
-    flex-shrink:0;
     background:var(--diff-bg);
     display:flex;
     flex-direction:column;
@@ -266,6 +276,11 @@
     margin-top:8px;
   }
   .timer-box.active{ display:flex; }
+  .mission-row .timer-box{
+    grid-column:2;
+    justify-content:center;
+    margin-top:0;
+  }
   .timer-label{
     font-size:9px;
     font-weight:800;
@@ -286,18 +301,16 @@
 
   /* ---- Mission row ---- */
   .mission-row{
-    display:flex;
+    display:grid;
+    grid-template-columns: 1fr var(--diff-w) 1fr;
     flex-shrink:0;
     background:var(--diff-bg);
   }
   .mission-group{
-    flex:1;
     display:flex;
   }
-  .mission-gap{
-    width:110px;
-    flex-shrink:0;
-  }
+  .mission-group:first-child{ grid-column:1; }
+  .mission-group:last-child{ grid-column:3; }
   .mission-cell{
     flex:1;
     display:flex;
@@ -336,33 +349,54 @@
   .chakra{
     flex:1;
     display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:clamp(16px, 5vw, 48px);
+    flex-direction:column;
+    align-items:stretch;
+    min-height:0;
     position:relative;
     color:var(--ink);
+    padding:2px 0 10px;
   }
-  .chakra.left{ background:var(--left); flex-direction:row; }
-  .chakra.right{ background:var(--right); flex-direction:row; }
+  .chakra.left{ background:var(--left); }
+  .chakra.right{ background:var(--right); }
 
   .chakra-label{
-    position:absolute;
-    top:16px;
-    left:0; right:0;
+    flex-shrink:0;
     text-align:center;
-    font-size:clamp(16px, 3.2vh, 22px);
+    font-size:clamp(14px, 2.6vh, 20px);
     font-weight:800;
     letter-spacing:0.18em;
     color:var(--ink-dim);
   }
 
+  .chakra-row{
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:row;
+    align-items:stretch;
+    justify-content:center;
+    gap:clamp(8px, 2.5vw, 20px);
+    padding:6px 8px 0;
+  }
+
   .chakra-value{
-    font-size:clamp(100px, 48vh, 340px);
+    flex-shrink:1;
+    align-self:center;
+    font-size:clamp(60px, 30vh, 200px);
     font-weight:900;
     font-variant-numeric:tabular-nums;
     line-height:1;
     min-width:1.3ch;
     text-align:center;
+  }
+
+  .chakra .step-chakra{
+    flex-shrink:0;
+    align-self:stretch;
+    width:clamp(44px, 11vw, 80px);
+    height:auto;
+    border-radius:16px;
+    font-size:clamp(20px, 4.5vh, 32px);
   }
 
   button.step{
@@ -690,10 +724,6 @@
         <div class="diff-label">DIFF</div>
         <div class="diff-value" id="diff">0</div>
         <button class="end-round-btn" id="end-round">END ROUND</button>
-        <div class="timer-box" id="timer-box">
-          <div class="timer-label">TIME</div>
-          <div class="timer-value" id="timer-value">30:00</div>
-        </div>
       </div>
 
       <div class="points right">
@@ -711,7 +741,10 @@
         <div class="mission-cell">D-MISSION <span class="mission-value" id="mission-value-d">0</span></div>
         <div class="mission-cell locked">C-MISSION <span class="mission-value" id="mission-value-c">–</span></div>
       </div>
-      <div class="mission-gap"></div>
+      <div class="timer-box" id="timer-box">
+        <div class="timer-label">TIME</div>
+        <div class="timer-value" id="timer-value">30:00</div>
+      </div>
       <div class="mission-group">
         <div class="mission-cell locked">B-MISSION <span class="mission-value" id="mission-value-b">–</span></div>
         <div class="mission-cell locked">A-MISSION <span class="mission-value" id="mission-value-a">–</span></div>
@@ -721,18 +754,22 @@
     <div class="main">
       <div class="chakra left">
         <div class="chakra-label">CHAKRA</div>
-        <button class="step step-chakra" data-side="left" data-stat="chakra" data-delta="-1">–</button>
-        <span class="chakra-value" id="chakra-left">5</span>
-        <button class="step step-chakra" data-side="left" data-stat="chakra" data-delta="1">+</button>
+        <div class="chakra-row">
+          <button class="step step-chakra" data-side="left" data-stat="chakra" data-delta="-1">–</button>
+          <span class="chakra-value" id="chakra-left">5</span>
+          <button class="step step-chakra" data-side="left" data-stat="chakra" data-delta="1">+</button>
+        </div>
       </div>
 
       <div class="divider"></div>
 
       <div class="chakra right">
         <div class="chakra-label">CHAKRA</div>
-        <button class="step step-chakra" data-side="right" data-stat="chakra" data-delta="1">+</button>
-        <span class="chakra-value" id="chakra-right">5</span>
-        <button class="step step-chakra" data-side="right" data-stat="chakra" data-delta="-1">–</button>
+        <div class="chakra-row">
+          <button class="step step-chakra" data-side="right" data-stat="chakra" data-delta="1">+</button>
+          <span class="chakra-value" id="chakra-right">5</span>
+          <button class="step step-chakra" data-side="right" data-stat="chakra" data-delta="-1">–</button>
+        </div>
       </div>
 
       <button class="options-btn" id="options-open">OPTIONS</button>
